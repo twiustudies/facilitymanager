@@ -11,7 +11,7 @@ class FacilitySwitcher(QMainWindow):
         central_widget = QWidget()
         layout = QVBoxLayout(central_widget)
         self.setCentralWidget(central_widget)
-
+        # new comment
         # Label for instructions
         self.instruction_label = QLabel("Select a facility:")
         layout.addWidget(self.instruction_label)
