@@ -15,7 +15,7 @@ class FacilitySwitcher(QMainWindow):
         # Label for instructions
         self.instruction_label = QLabel("Select a facility:")
         layout.addWidget(self.instruction_label)
-
+        # another new comment
         # Create a combo box (drop-down)
         self.combo_box = QComboBox()
         facilities = [
