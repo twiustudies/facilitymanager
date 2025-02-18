@@ -28,7 +28,7 @@ class FacilitySwitcher(QMainWindow):
         self.combo_box.addItems(facilities)
         self.combo_box.currentTextChanged.connect(self.facility_changed)
         layout.addWidget(self.combo_box)
-
+        # other comment
         # Label to display the current selection
         self.current_facility_label = QLabel(f"Current Facility: {self.combo_box.currentText()}")
         layout.addWidget(self.current_facility_label)
