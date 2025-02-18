@@ -32,7 +32,7 @@ class FacilitySwitcher(QMainWindow):
         # Label to display the current selection
         self.current_facility_label = QLabel(f"Current Facility: {self.combo_box.currentText()}")
         layout.addWidget(self.current_facility_label)
-
+    # new comment
     def facility_changed(self, facility):
         """Update the label when a new facility is selected."""
         self.current_facility_label.setText(f"Current Facility: {facility}")
