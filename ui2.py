@@ -6,4 +6,5 @@ import my_module2 # Importing the module2
 # new comment
 print(my_module.greet("Alice"))
 # this was added
+# this too
 print(my_module2.greet("Bob"))
