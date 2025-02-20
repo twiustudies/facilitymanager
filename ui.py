@@ -38,6 +38,7 @@ class FacilitySwitcher(QMainWindow):
         self.current_facility_label.setText(f"Current Facility: {facility}")
 
 # a new comment
+# here is another comment
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = FacilitySwitcher()
