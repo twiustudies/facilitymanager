@@ -37,6 +37,7 @@ class FacilitySwitcher(QMainWindow):
         """Update the label when a new facility is selected."""
         self.current_facility_label.setText(f"Current Facility: {facility}")
 
+# a new comment
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = FacilitySwitcher()
