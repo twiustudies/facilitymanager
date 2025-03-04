@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>FacilityManager</title>
+</head>
+<body>
+  <nav>
+    <a href="{{ url_for('index') }}">Home</a> |
+    <a href="{{ url_for('users.user_list') }}">Benutzer</a> |
+    <a href="{{ url_for('buildings.building_list') }}">Gebäude</a> |
+    <a href="{{ url_for('maintenance.maintenance_list') }}">Wartungspläne</a>
+  </nav>
+  <hr>
+  {% block content %}
+  {% endblock %}
+</body>
+</html>

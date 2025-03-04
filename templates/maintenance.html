@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Wartungspläne</h1>
+<a href="{{ url_for('maintenance.add_maintenance') }}">Neuen Wartungsplan erstellen</a>
+<ul>
+  {% for plan in maintenance_plans %}
+  <li>Gebäude-ID: {{ plan.building_id }}, Datum: {{ plan.date }}, Auftrag: {{ plan.description }}
+      <a href="{{ url_for('maintenance.edit_maintenance', plan_id=plan.id) }}">Bearbeiten</a>
+      <form action="{{ url_for('maintenance.delete_maintenance', plan_id=plan.id) }}" method="post" style="display:inline;">
+         <button type="submit">Löschen</button>
+      </form>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}
