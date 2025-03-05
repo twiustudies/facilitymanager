@@ -158,3 +158,56 @@ def update_maintenance_date(plan_id):
         plan.date = new_date
         return jsonify({"status": "success", "message": "Datum aktualisiert"}), 200
     return jsonify({"status": "error", "message": "Eintrag nicht gefunden"}), 404
+
+# NEUE ROUTE: Wartungsanweisungen als PDF exportieren
+@bp.route('/export/instruction_pdf/<int:plan_id>')
+def export_instruction_pdf(plan_id):
+    """Generiert eine detaillierte Wartungsanweisung als PDF mit Checklisten und Bildern."""
+    plan = next((m for m in maintenance_plans if m.id == plan_id), None)
+    if not plan:
+        return jsonify({"status": "error", "message": "Wartungseintrag nicht gefunden"}), 404
+
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+
+    # PDF Kopf
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(100, 750, "Wartungsanweisung")
+
+    # Wartungsdetails
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(100, 730, f"Gebäude-ID: {plan.building_id}")
+    pdf.drawString(100, 710, f"Datum: {plan.date}")
+    pdf.drawString(100, 690, f"Beschreibung: {plan.description}")
+    pdf.drawString(100, 670, f"Kategorie: {plan.category}")
+
+    # Checkliste
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(100, 640, "Checkliste:")
+    pdf.setFont("Helvetica", 12)
+    checklist = [
+        "✔ Werkzeuge bereitstellen",
+        "✔ Sicherheitsvorkehrungen prüfen",
+        "✔ Wartungsbereich absichern",
+        "✔ Bauteile inspizieren",
+        "✔ Funktionsprüfung durchführen"
+    ]
+    
+    y_position = 620
+    for item in checklist:
+        pdf.drawString(120, y_position, item)
+        y_position -= 20
+
+    # Bild einfügen (Beispielbild)
+    try:
+        img_path = "static/images/maintenance_example.png"
+        image = ImageReader(img_path)
+        pdf.drawImage(image, 100, 400, width=200, height=150)
+    except Exception as e:
+        pdf.drawString(100, 380, "⚠️ Bild konnte nicht geladen werden.")
+
+    pdf.save()
+    buffer.seek(0)
+
+    return Response(buffer, mimetype="application/pdf",
+                    headers={"Content-Disposition": f"attachment;filename=maintenance_instruction_{plan_id}.pdf"})
