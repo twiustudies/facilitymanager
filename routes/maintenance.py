@@ -367,3 +367,23 @@ def process_csv(filepath):
                 errors.append(f"Row {i}: {str(e)}")
 
     return errors, imported_tasks
+
+from collections import Counter
+from datetime import datetime
+from flask import jsonify
+
+@bp.route('/maintenance/stats', methods=['GET'])
+def maintenance_stats():
+    """Gibt die Anzahl der Wartungsaufgaben pro Monat zurück."""
+    monthly_counts = Counter()
+
+    for plan in maintenance_plans:
+        try:
+            date = datetime.strptime(plan.date, "%Y-%m-%d")
+            month_label = date.strftime("%Y-%m")
+            monthly_counts[month_label] += 1
+        except ValueError:
+            continue  # Falls ein Datum ungültig ist, überspringen
+
+    stats = [{"month": month, "count": count} for month, count in sorted(monthly_counts.items())]
+    return jsonify(stats)

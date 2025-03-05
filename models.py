@@ -37,11 +37,7 @@ buildings = [
     Building(5, "Zentrale Köln", "102 Rheinstr."),
 ]
 
-<<<<<<< HEAD
 # Sample Maintenance Plans List (Previously Missing!) now added new in this version
-=======
-# Sample Maintenance Plans List (Previously Missing!) now added new
->>>>>>> 68db010 (changes)
 maintenance_plans = [
     MaintenancePlan(1, 1, "2024-03-10", "HVAC inspection"),
     MaintenancePlan(2, 2, "2024-04-15", "Elevator maintenance"),
