@@ -19,7 +19,25 @@ class MaintenancePlan:
         self.date = date
         self.description = description
 
-# Simulierter Speicher (in-memory)
-users = []
-buildings = []
-maintenance_plans = []
+# Sample Users List
+users = [
+    User(1, "admin", "admin@example.com"),
+    User(2, "john_doe", "john.doe@example.com"),
+    User(3, "jane_smith", "jane.smith@example.com")
+]
+
+# Sample Buildings List
+buildings = [
+    Building(1, "Main Facility", "123 Main St"),
+    Building(2, "Engineering Hub", "456 Tech Rd"),
+    Building(3, "Research Center", "789 Innovation Ave"),
+    Building(4, "Data Center München", "101 Cloud St"),
+    Building(5, "Zentrale Köln", "102 Rheinstr."),
+]
+
+# ✅ Sample Maintenance Plans List (Previously Missing!)
+maintenance_plans = [
+    MaintenancePlan(1, 1, "2024-03-10", "HVAC inspection"),
+    MaintenancePlan(2, 2, "2024-04-15", "Elevator maintenance"),
+    MaintenancePlan(3, 3, "2024-05-20", "Fire safety check"),
+]

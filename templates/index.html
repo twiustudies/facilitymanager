@@ -1,4 +1,44 @@
 {% extends "base.html" %}
+
 {% block content %}
 <h1>Willkommen bei FacilityManager</h1>
+
+<!-- Facility Selection -->
+<label for="facilitySearch">Search Facility:</label>
+<input type="text" id="facilitySearch" placeholder="Search facility...">
+
+<select id="facilityDropdown">
+    <option value="">Select a Facility</option>
+</select>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const searchInput = document.getElementById("facilitySearch");
+    const dropdown = document.getElementById("facilityDropdown");
+
+    // Fetch facilities from backend
+    fetch("/buildings/facilities")
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(facility => {
+                let option = document.createElement("option");
+                option.value = facility.id;
+                option.textContent = facility.name;
+                dropdown.appendChild(option);
+            });
+        });
+
+    // Real-time filtering function
+    searchInput.addEventListener("input", function() {
+        const searchText = searchInput.value.toLowerCase();
+        const options = dropdown.options;
+
+        for (let i = 1; i < options.length; i++) { // Skip first (default) option
+            let facilityName = options[i].textContent.toLowerCase();
+            options[i].style.display = facilityName.includes(searchText) ? "block" : "none";
+        }
+    });
+});
+</script>
+
 {% endblock %}
