@@ -24,3 +24,14 @@ def dashboard():
         })
 
     return render_template('index.html', upcoming_maintenance=upcoming_maintenance)
+
+from flask import request, redirect, url_for, session
+from translations import LANGUAGES
+
+@bp.route('/set_language', methods=['POST'])
+def set_language():
+    """Speichert die vom Nutzer gewählte Sprache in der Session."""
+    lang = request.form.get("language")
+    if lang in LANGUAGES:
+        session["language"] = lang
+    return redirect(request.referrer or url_for('dashboard'))
