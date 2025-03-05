@@ -280,3 +280,28 @@ def update_priority_settings():
         global PRIORITY_LEVELS
         PRIORITY_LEVELS.update(data["priority_weights"])
     return jsonify({"message": "Priority settings updated"}), 200
+from flask import request, jsonify
+from models import comments, Comment
+from datetime import datetime
+
+@bp.route('/maintenance/<int:maintenance_id>/comments', methods=['GET'])
+def get_comments(maintenance_id):
+    """ Gibt alle Kommentare für einen Wartungseintrag zurück """
+    entry_comments = [c for c in comments if c.maintenance_id == maintenance_id]
+    return jsonify([{"user": c.user, "text": c.text, "timestamp": c.timestamp} for c in entry_comments])
+
+@bp.route('/maintenance/<int:maintenance_id>/comments', methods=['POST'])
+def add_comment(maintenance_id):
+    """ Fügt einen neuen Kommentar zu einem Wartungseintrag hinzu """
+    data = request.get_json()
+    if "user" not in data or "text" not in data:
+        return jsonify({"error": "Missing user or text"}), 400
+    
+    new_comment = Comment(
+        maintenance_id=maintenance_id,
+        user=data["user"],
+        text=data["text"],
+        timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
+    comments.append(new_comment)
+    return jsonify({"message": "Comment added successfully"}), 201

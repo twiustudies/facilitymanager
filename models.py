@@ -47,3 +47,14 @@ maintenance_plans = [
     MaintenancePlan(2, 2, "2024-04-15", "Elevator maintenance"),
     MaintenancePlan(3, 3, "2024-05-20", "Fire safety check"),
 ]
+
+class Comment:
+    """ Modell für Wartungskommentare """
+    def __init__(self, maintenance_id, user, text, timestamp):
+        self.maintenance_id = maintenance_id
+        self.user = user
+        self.text = text
+        self.timestamp = timestamp
+
+# Beispiel-Datenbank (kann durch eine echte Datenbank ersetzt werden)
+comments = []
