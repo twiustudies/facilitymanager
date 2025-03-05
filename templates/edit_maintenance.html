@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Wartungsplan bearbeiten</h1>
+<form method="POST">
+  <label for="date">Datum:</label>
+  <input type="date" name="date" value="{{ plan.date }}" required>
+
+  <label for="description">Auftrag:</label>
+  <input type="text" name="description" value="{{ plan.description }}" required>
+
+  <label for="category">Kategorie:</label>
+  <select name="category" required>
+    <option value="Electrical" {% if plan.category == "Electrical" %}selected{% endif %}>⚡ Elektrisch</option>
+    <option value="Sanitary" {% if plan.category == "Sanitary" %}selected{% endif %}>🚰 Sanitär</option>
+    <option value="Building Maintenance" {% if plan.category == "Building Maintenance" %}selected{% endif %}>🏗️ Gebäudewartung</option>
+    <option value="Other" {% if plan.category == "Other" %}selected{% endif %}>Andere</option>
+  </select><br><br>
+
+  <button type="submit">Speichern</button>
+</form>
+{% endblock %}

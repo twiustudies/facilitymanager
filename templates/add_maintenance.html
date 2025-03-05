@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Wartungsplan erstellen</h1>
+<form method="post">
+  <label>Gebäude-ID:</label><br>
+  <input type="number" name="building_id" required><br>
+
+  <label>Datum:</label><br>
+  <input type="date" name="date" required><br>
+
+  <label>Auftrag:</label><br>
+  <textarea name="description" required></textarea><br>
+
+  <label>Kategorie:</label><br>
+  <select name="category" required>
+    <option value="Electrical">⚡ Elektrisch</option>
+    <option value="Sanitary">🚰 Sanitär</option>
+    <option value="Building Maintenance">🏗️ Gebäudewartung</option>
+    <option value="Other">Andere</option>
+  </select><br><br>
+
+  <button type="submit">Erstellen</button>
+</form>
+{% endblock %}
