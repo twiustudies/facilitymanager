@@ -8,7 +8,7 @@ def building_list():
     return render_template('buildings.html', buildings=buildings)
 
 ####
-# FM-US-1
+# FM-US-1 added
 @bp.route('/facilities')
 def get_facilities():
     """API endpoint to fetch facility list as JSON"""
