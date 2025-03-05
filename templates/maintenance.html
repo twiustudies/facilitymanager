@@ -30,6 +30,7 @@
       <th>Datum</th>
       <th>Auftrag</th>
       <th>Kategorie</th>
+      <th>Aktionen</th>
     </tr>
   </thead>
   <tbody id="maintenanceList">
@@ -48,6 +49,9 @@
         {% elif plan.category == "Sanitary" %} 🚰 Sanitär
         {% elif plan.category == "Building Maintenance" %} 🏗️ Gebäudewartung
         {% else %} Andere {% endif %}
+      </td>
+      <td>
+        <a href="{{ url_for('maintenance.export_instruction_pdf', plan_id=plan.id) }}" class="btn">📄 Anweisung als PDF</a>
       </td>
     </tr>
     {% endfor %}
