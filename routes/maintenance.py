@@ -211,3 +211,27 @@ def export_instruction_pdf(plan_id):
 
     return Response(buffer, mimetype="application/pdf",
                     headers={"Content-Disposition": f"attachment;filename=maintenance_instruction_{plan_id}.pdf"})
+@bp.route('/update', methods=['POST'])
+def update_maintenance():
+    """ Aktualisiert einen Wartungseintrag basierend auf dem Feld """
+    data = request.json
+    maintenance_id = int(data.get("id"))
+    field = data.get("field")
+    value = data.get("value")
+
+    # Sicherheitsüberprüfung: Nur autorisierte Benutzer dürfen bearbeiten (Dummy-Check)
+    if not request.headers.get("Authorization"):
+        return jsonify({"status": "error", "message": "Nicht autorisiert"}), 403
+
+    plan = next((m for m in maintenance_plans if m.id == maintenance_id), None)
+    if not plan:
+        return jsonify({"status": "error", "message": "Wartungseintrag nicht gefunden"}), 404
+
+    if field == "date":
+        plan.date = value
+    elif field == "description":
+        plan.description = value
+    else:
+        return jsonify({"status": "error", "message": "Ungültiges Feld"}), 400
+
+    return jsonify({"status": "success", "message": "Änderung gespeichert"})
