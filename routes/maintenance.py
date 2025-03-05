@@ -19,17 +19,17 @@ def add_maintenance():
         return redirect(url_for('maintenance.maintenance_list'))
     return render_template('add_maintenance.html')
 
+# addded for FM-US-2
 @bp.route('/edit/<int:plan_id>', methods=['GET', 'POST'])
 def edit_maintenance(plan_id):
     plan = next((m for m in maintenance_plans if m.id == plan_id), None)
-    if not plan:
-        return "Wartungsplan nicht gefunden", 404
     if request.method == 'POST':
-        plan.building_id = int(request.form['building_id'])
         plan.date = request.form['date']
         plan.description = request.form['description']
+        plan.reminder_enabled = 'reminder_enabled' in request.form  # Checkbox für Erinnerungen
         return redirect(url_for('maintenance.maintenance_list'))
     return render_template('edit_maintenance.html', plan=plan)
+
 
 @bp.route('/delete/<int:plan_id>', methods=['POST'])
 def delete_maintenance(plan_id):
