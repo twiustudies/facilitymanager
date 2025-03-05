@@ -12,12 +12,14 @@ class Building:
         self.name = name
         self.address = address
 
+# Changed for FM-US-2
 class MaintenancePlan:
-    def __init__(self, id, building_id, date, description):
+    def __init__(self, id, building_id, date, description, reminder_enabled=False):
         self.id = id
         self.building_id = building_id
         self.date = date
         self.description = description
+        self.reminder_enabled = reminder_enabled  # Neues Attribut für Erinnerungen
 
 # Sample Users List
 users = [

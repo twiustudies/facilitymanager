@@ -1,13 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Wartungsplan bearbeiten</h1>
-<form method="post">
-  <label>Gebäude-ID:</label><br>
-  <input type="number" name="building_id" value="{{ plan.building_id }}" required><br>
-  <label>Datum:</label><br>
-  <input type="date" name="date" value="{{ plan.date }}" required><br>
-  <label>Auftrag:</label><br>
-  <textarea name="description" required>{{ plan.description }}</textarea><br><br>
-  <button type="submit">Speichern</button>
+<form method="POST">
+  <label for="date">Date:</label>
+  <input type="date" name="date" value="{{ plan.date }}" required>
+  
+  <label for="description">Description:</label>
+  <input type="text" name="description" value="{{ plan.description }}" required>
+
+  <label for="reminder_enabled">Enable Reminder:</label>
+  <input type="checkbox" name="reminder_enabled" {% if plan.reminder_enabled %}checked{% endif %}>
+  
+  <button type="submit">Save</button>
 </form>
 {% endblock %}
