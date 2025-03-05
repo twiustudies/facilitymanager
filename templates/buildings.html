@@ -12,4 +12,33 @@
   </li>
   {% endfor %}
 </ul>
+
+<div class="qr-section">
+    <h3>QR-Code für diese Einrichtung</h3>
+    <img id="qr-code-img" src="" alt="QR Code" style="max-width: 200px; display: none;">
+    <br>
+    <button id="generate-qr">QR-Code anzeigen</button>
+    <button id="download-qr" style="display: none;">QR-Code herunterladen</button>
+</div>
+
+<script>
+    document.getElementById("generate-qr").addEventListener("click", function() {
+        const buildingId = {{ building.id }};
+        const qrImg = document.getElementById("qr-code-img");
+        const downloadBtn = document.getElementById("download-qr");
+
+        qrImg.src = `/buildings/${buildingId}/qr`;
+        qrImg.style.display = "block";
+        downloadBtn.style.display = "block";
+        downloadBtn.onclick = function() {
+            const link = document.createElement("a");
+            link.href = qrImg.src;
+            link.download = `facility_${buildingId}_qr.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+    });
+</script>
+
 {% endblock %}
