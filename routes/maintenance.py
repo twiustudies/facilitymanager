@@ -20,6 +20,53 @@ def maintenance_list():
 
     return render_template('maintenance.html', maintenance_plans=maintenance_plans)
 
+@bp.route('/history')
+def maintenance_history():
+    """Anzeige der Wartungshistorie mit Filteroptionen"""
+    filter_type = request.args.get('type', '')
+    filter_date = request.args.get('date', '')
+
+    history = [
+        plan for plan in maintenance_plans 
+        if (filter_type in plan.category or filter_type == '') 
+        and (filter_date in plan.date or filter_date == '')
+    ]
+    
+    return render_template('history.html', maintenance_history=history)
+
+@bp.route('/history/export/csv')
+def export_history_csv():
+    """Exportiert die Wartungshistorie als CSV"""
+    def generate():
+        data = [["ID", "Gebäude-ID", "Datum", "Auftrag", "Kategorie"]]
+        for plan in maintenance_plans:
+            data.append([plan.id, plan.building_id, plan.date, plan.description, plan.category])
+
+        output = BytesIO()
+        writer = csv.writer(output)
+        writer.writerows(data)
+        output.seek(0)
+        return output.getvalue()
+
+    return Response(generate(), mimetype="text/csv", headers={"Content-Disposition": "attachment;filename=maintenance_history.csv"})
+
+@bp.route('/history/export/pdf')
+def export_history_pdf():
+    """Exportiert die Wartungshistorie als PDF"""
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+    pdf.drawString(100, 750, "Wartungshistorie Bericht")
+
+    y_position = 730
+    for plan in maintenance_plans:
+        pdf.drawString(100, y_position, f"ID: {plan.id}, Gebäude-ID: {plan.building_id}, Datum: {plan.date}, Kategorie: {plan.category}, Auftrag: {plan.description}")
+        y_position -= 20
+
+    pdf.save()
+    buffer.seek(0)
+
+    return Response(buffer, mimetype="application/pdf", headers={"Content-Disposition": "attachment;filename=maintenance_history.pdf"})
+
 @bp.route('/search', methods=['GET'])
 def search_maintenance():
     query = request.args.get('q', '').lower()
