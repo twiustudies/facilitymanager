@@ -3,17 +3,77 @@
 <head>
   <meta charset="utf-8">
   <title>FacilityManager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: white;
+      color: black;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .dark-mode {
+      background-color: #121212;
+      color: #ffffff;
+    }
+    nav {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background: #f4f4f4;
+    }
+    .dark-mode nav {
+      background: #333;
+    }
+    .toggle-container {
+      display: flex;
+      align-items: center;
+    }
+    .toggle-switch {
+      margin-left: 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <nav>
-    <a href="{{ url_for('index') }}">Home</a> |
-    <a href="{{ url_for('users.user_list') }}">Benutzer</a> |
-    <a href="{{ url_for('buildings.building_list') }}">Gebäude</a> |
-    <a href="{{ url_for('maintenance.maintenance_list') }}">Wartungspläne</a>
+    <div>
+      <a href="{{ url_for('index') }}">Home</a> |
+      <a href="{{ url_for('users.user_list') }}">Benutzer</a> |
+      <a href="{{ url_for('buildings.building_list') }}">Gebäude</a> |
+      <a href="{{ url_for('maintenance.maintenance_list') }}">Wartungspläne</a>
+    </div>
+    <div class="toggle-container">
+      <label for="darkModeToggle">Dark Mode</label>
+      <input type="checkbox" id="darkModeToggle" class="toggle-switch">
+    </div>
   </nav>
   <hr>
   {% block content %}
   {% endblock %}
-</body>
 
+  <script>
+    const toggleSwitch = document.getElementById('darkModeToggle');
+    const body = document.body;
+
+    function applyDarkMode(isDark) {
+      if (isDark) {
+        body.classList.add('dark-mode');
+        toggleSwitch.checked = true;
+      } else {
+        body.classList.remove('dark-mode');
+        toggleSwitch.checked = false;
+      }
+    }
+
+    // Check for saved preference
+    const darkModePreference = localStorage.getItem('dark-mode') === 'true';
+    applyDarkMode(darkModePreference);
+
+    // Toggle event listener
+    toggleSwitch.addEventListener('change', () => {
+      const isDark = toggleSwitch.checked;
+      localStorage.setItem('dark-mode', isDark);
+      applyDarkMode(isDark);
+    });
+  </script>
+</body>
 </html>
