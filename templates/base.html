@@ -2,43 +2,91 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FacilityManager</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: white;
       color: black;
+      margin: 0;
       transition: background-color 0.3s, color 0.3s;
     }
     .dark-mode {
       background-color: #121212;
       color: #ffffff;
     }
+    
     nav {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 10px;
       background: #f4f4f4;
     }
     .dark-mode nav {
       background: #333;
     }
+    
+    /* Hamburger Menü */
+    .menu-toggle {
+      display: none;
+      font-size: 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 15px;
+    }
+    
     .toggle-container {
       display: flex;
       align-items: center;
     }
+    
     .toggle-switch {
       margin-left: 10px;
       cursor: pointer;
+    }
+    
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .menu-toggle {
+        display: block;
+      }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        padding: 10px;
+        background: #f4f4f4;
+      }
+      .dark-mode .nav-links {
+        background: #333;
+      }
+      .nav-links a {
+        padding: 10px;
+        display: block;
+      }
+      .nav-links.active {
+        display: flex;
+      }
     }
   </style>
 </head>
 <body>
   <nav>
-    <div>
-      <a href="{{ url_for('index') }}">Home</a> |
-      <a href="{{ url_for('users.user_list') }}">Benutzer</a> |
-      <a href="{{ url_for('buildings.building_list') }}">Gebäude</a> |
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <div class="nav-links">
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('users.user_list') }}">Benutzer</a>
+      <a href="{{ url_for('buildings.building_list') }}">Gebäude</a>
       <a href="{{ url_for('maintenance.maintenance_list') }}">Wartungspläne</a>
     </div>
     <div class="toggle-container">
@@ -51,6 +99,7 @@
   {% endblock %}
 
   <script>
+    // Dark Mode Handling
     const toggleSwitch = document.getElementById('darkModeToggle');
     const body = document.body;
 
@@ -74,6 +123,12 @@
       localStorage.setItem('dark-mode', isDark);
       applyDarkMode(isDark);
     });
+
+    // Mobile Navigation Handling
+    function toggleMenu() {
+      const navLinks = document.querySelector('.nav-links');
+      navLinks.classList.toggle('active');
+    }
   </script>
 </body>
 </html>
