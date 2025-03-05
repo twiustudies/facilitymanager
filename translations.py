@@ -2,7 +2,11 @@ from flask_babel import Babel
 
 babel = Babel()
 
+<<<<<<< HEAD
 # Unterstützte Sprachen,nur  eingeschraenkt
+=======
+# Unterstützte Sprachen, eingeschraekt
+>>>>>>> 68db010 (changes)
 LANGUAGES = {
     "en": "English",
     "de": "Deutsch",
