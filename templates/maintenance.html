@@ -34,6 +34,61 @@
     </tr>
   </thead>
   <tbody id="maintenanceList">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".editable").forEach(cell => {
+                cell.addEventListener("dblclick", function() {
+                    let oldValue = this.innerText;
+                    let input = document.createElement("input");
+                    input.type = "text";
+                    input.value = oldValue;
+                    this.innerHTML = "";
+                    this.appendChild(input);
+                    input.focus();
+
+                    input.addEventListener("blur", function() {
+                        let newValue = input.value.trim();
+                        if (newValue !== oldValue) {
+                            let maintenanceId = cell.parentElement.dataset.id;
+                            let field = cell.dataset.field;
+                            updateMaintenance(maintenanceId, field, newValue, cell);
+                        } else {
+                            cell.innerText = oldValue;
+                        }
+                    });
+
+                    input.addEventListener("keydown", function(event) {
+                        if (event.key === "Enter") {
+                            input.blur();
+                        } else if (event.key === "Escape") {
+                            cell.innerText = oldValue;
+                        }
+                    });
+                });
+            });
+        });
+
+        function updateMaintenance(id, field, value, cell) {
+            fetch(`/maintenance/update`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: id, field: field, value: value })
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.status === "success") {
+                      cell.innerText = value;
+                      alert("Änderung erfolgreich gespeichert!");
+                  } else {
+                      alert("Fehler beim Speichern der Änderung: " + data.message);
+                      cell.innerText = cell.dataset.oldValue;
+                  }
+              })
+              .catch(error => {
+                  alert("Serverfehler: " + error);
+                  cell.innerText = cell.dataset.oldValue;
+              });
+        }
+    </script>
     {% for plan in maintenance_plans %}
     <tr class="maintenance-item" 
         data-id="{{ plan.id }}" 
@@ -42,8 +97,8 @@
         draggable="true" 
         ondragstart="drag(event)">
       <td>{{ plan.building_id }}</td>
-      <td>{{ plan.date }}</td>
-      <td>{{ plan.description }}</td>
+      <td class='editable' data-field='date'>{{ plan.date }}</td>
+      <td class='editable' data-field='description'>{{ plan.description }}</td>
       <td>
         {% if plan.category == "Electrical" %} ⚡ Elektrisch
         {% elif plan.category == "Sanitary" %} 🚰 Sanitär
