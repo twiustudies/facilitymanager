@@ -18,7 +18,13 @@ def maintenance_list():
         plan.overdue = maintenance_date < today
         plan.recently_completed = today - maintenance_date <= recent_days
 
-    return render_template('maintenance.html', maintenance_plans=maintenance_plans)
+        # Berechnung der Priorität
+        calculate_priority(plan)
+
+    # Sortierung nach Priorität (höchste zuerst)
+    sorted_plans = sorted(maintenance_plans, key=lambda p: p.priority, reverse=True)
+
+    return render_template('maintenance.html', maintenance_plans=sorted_plans)
 
 @bp.route('/history')
 def maintenance_history():
@@ -235,3 +241,42 @@ def update_maintenance():
         return jsonify({"status": "error", "message": "Ungültiges Feld"}), 400
 
     return jsonify({"status": "success", "message": "Änderung gespeichert"})
+
+# Prioritätsstufen definieren
+PRIORITY_LEVELS = {
+    "low": 3,
+    "medium": 2,
+    "high": 1
+}
+
+def calculate_priority(plan):
+    """ Berechnet die Priorität eines Wartungsplans basierend auf Deadline und Kritikalität """
+    today = datetime.today().date()
+    maintenance_date = datetime.strptime(plan.date, "%Y-%m-%d").date()
+    
+    # Dringlichkeit basierend auf der Nähe der Deadline
+    days_until_due = (maintenance_date - today).days
+    urgency_score = max(0, 10 - days_until_due)  # Höhere Werte für nähere Deadlines
+    
+    # Kritikalität basierend auf der Kategorie oder weiteren Faktoren
+    criticality_score = PRIORITY_LEVELS.get(plan.criticality, 3)  # Default: low
+    
+    # Gesamtprioritätsbewertung (höhere Werte = höhere Priorität)
+    plan.priority = urgency_score + (5 * criticality_score)
+    
+    # Prioritätsanzeige für UI
+    if plan.priority > 20:
+        plan.priority_indicator = "🔴 High Priority"
+    elif plan.priority > 10:
+        plan.priority_indicator = "🟠 Medium Priority"
+    else:
+        plan.priority_indicator = "🟢 Low Priority"
+
+@bp.route('/priority-settings', methods=['POST'])
+def update_priority_settings():
+    """ Ermöglicht Nutzern die Anpassung der Priorisierungslogik """
+    data = request.get_json()
+    if "priority_weights" in data:
+        global PRIORITY_LEVELS
+        PRIORITY_LEVELS.update(data["priority_weights"])
+    return jsonify({"message": "Priority settings updated"}), 200
