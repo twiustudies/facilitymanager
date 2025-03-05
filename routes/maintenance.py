@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, Response
+from flask import Blueprint, render_template, request, redirect, url_for, Response, jsonify
 import csv
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -10,6 +10,24 @@ bp = Blueprint('maintenance', __name__, url_prefix='/maintenance')
 @bp.route('/')
 def maintenance_list():
     return render_template('maintenance.html', maintenance_plans=maintenance_plans)
+
+@bp.route('/search', methods=['GET'])
+def search_maintenance():
+    query = request.args.get('q', '').lower()
+    results = []
+
+    for plan in maintenance_plans:
+        if (query in str(plan.building_id).lower() or
+            query in plan.date.lower() or
+            query in plan.description.lower()):
+            results.append({
+                "id": plan.id,
+                "building_id": plan.building_id,
+                "date": plan.date,
+                "description": plan.description
+            })
+
+    return jsonify(results)
 
 @bp.route('/add', methods=['GET', 'POST'])
 def add_maintenance():
