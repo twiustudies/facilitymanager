@@ -11,12 +11,12 @@ bp = Blueprint('maintenance', __name__, url_prefix='/maintenance')
 @bp.route('/')
 def maintenance_list():
     today = datetime.today().date()
-    recent_days = timedelta(days=7)  # Wartungen, die in den letzten 7 Tagen abgeschlossen wurden
+    recent_days = timedelta(days=7)
 
     for plan in maintenance_plans:
         maintenance_date = datetime.strptime(plan.date, "%Y-%m-%d").date()
-        plan.overdue = maintenance_date < today  # Überfällig, wenn in der Vergangenheit
-        plan.recently_completed = today - maintenance_date <= recent_days  # Kürzlich abgeschlossen
+        plan.overdue = maintenance_date < today
+        plan.recently_completed = today - maintenance_date <= recent_days
 
     return render_template('maintenance.html', maintenance_plans=maintenance_plans)
 
@@ -45,7 +45,8 @@ def add_maintenance():
         building_id = int(request.form['building_id'])
         date = request.form['date']
         description = request.form['description']
-        plan = MaintenancePlan(new_id, building_id, date, description)
+        category = request.form['category']
+        plan = MaintenancePlan(new_id, building_id, date, description, category)
         maintenance_plans.append(plan)
         return redirect(url_for('maintenance.maintenance_list'))
     return render_template('add_maintenance.html')
@@ -56,6 +57,7 @@ def edit_maintenance(plan_id):
     if request.method == 'POST':
         plan.date = request.form['date']
         plan.description = request.form['description']
+        plan.category = request.form['category']
         return redirect(url_for('maintenance.maintenance_list'))
     return render_template('edit_maintenance.html', plan=plan)
 

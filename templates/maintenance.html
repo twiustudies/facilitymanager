@@ -7,6 +7,15 @@
     <input type="checkbox" id="overdueFilter" onclick="filterOverdue()"> Nur überfällige Wartungen anzeigen
 </label>
 
+<!-- Kategorie-Filter -->
+<label for="categoryFilter">Kategorie:</label>
+<select id="categoryFilter" onchange="filterCategory()">
+    <option value="">Alle Kategorien</option>
+    <option value="Electrical">⚡ Elektrisch</option>
+    <option value="Sanitary">🚰 Sanitär</option>
+    <option value="Building Maintenance">🏗️ Gebäudewartung</option>
+</select>
+
 <!-- Suchfeld für Live-Suche -->
 <input type="text" id="searchInput" placeholder="Suche nach Gebäude, Wartungstyp oder Datum..." onkeyup="searchMaintenance()">
 
@@ -20,15 +29,22 @@
       <th>Gebäude</th>
       <th>Datum</th>
       <th>Auftrag</th>
+      <th>Kategorie</th>
     </tr>
   </thead>
   <tbody id="maintenanceList">
     {% for plan in maintenance_plans %}
     <tr class="maintenance-item 
-        {% if plan.overdue %}overdue{% elif plan.recently_completed %}completed{% endif %}">
+        {% if plan.overdue %}overdue{% elif plan.recently_completed %}completed{% endif %}" data-category="{{ plan.category }}">
       <td class="maintenance-data">{{ plan.building_id }}</td>
       <td class="maintenance-data">{{ plan.date }}</td>
       <td class="maintenance-data">{{ plan.description }}</td>
+      <td class="maintenance-category">
+        {% if plan.category == "Electrical" %} ⚡ Elektrisch
+        {% elif plan.category == "Sanitary" %} 🚰 Sanitär
+        {% elif plan.category == "Building Maintenance" %} 🏗️ Gebäudewartung
+        {% else %} Andere {% endif %}
+      </td>
     </tr>
     {% endfor %}
   </tbody>
@@ -71,10 +87,37 @@ function filterOverdue() {
         }
     });
 }
+
+// Filter für Kategorien
+function filterCategory() {
+    let category = document.getElementById("categoryFilter").value;
+    let items = document.querySelectorAll(".maintenance-item");
+
+    items.forEach(item => {
+        if (category === "" || item.getAttribute("data-category") === category) {
+            item.style.display = "table-row";
+        } else {
+            item.style.display = "none";
+        }
+    });
+}
 </script>
 
 <style>
-  /* Farben für verschiedene Wartungszustände */
+  /* Farben für verschiedene Wartungskategorien */
+  .Electrical {
+    background-color: #e0f7fa !important;
+  }
+
+  .Sanitary {
+    background-color: #e8f5e9 !important;
+  }
+
+  .Building Maintenance {
+    background-color: #fff3e0 !important;
+  }
+
+  /* Farben für überfällige und abgeschlossene Wartungen */
   .overdue {
     background-color: #ffcccc !important;
     border-left: 5px solid #cc0000;
@@ -92,7 +135,7 @@ function filterOverdue() {
       background: white;
       color: black;
     }
-    .print-button, #searchInput, #overdueFilter {
+    .print-button, #searchInput, #overdueFilter, #categoryFilter {
       display: none;
     }
     table {
@@ -108,43 +151,6 @@ function filterOverdue() {
     th {
       background-color: #f4f4f4;
     }
-  }
-
-  /* Standard Ansicht */
-  .print-button {
-    padding: 10px;
-    background: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    margin-bottom: 10px;
-  }
-
-  .print-button:hover {
-    background: #0056b3;
-  }
-
-  #searchInput {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    font-size: 16px;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-
-  th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-  }
-
-  th {
-    background-color: #f4f4f4;
   }
 </style>
 
