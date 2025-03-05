@@ -305,3 +305,65 @@ def add_comment(maintenance_id):
     )
     comments.append(new_comment)
     return jsonify({"message": "Comment added successfully"}), 201
+
+import csv
+import os
+from flask import request, jsonify
+from werkzeug.utils import secure_filename
+from models import maintenance_plans, MaintenancePlan
+
+UPLOAD_FOLDER = "uploads"
+ALLOWED_EXTENSIONS = {"csv"}
+
+# Sicherstellen, dass der Upload-Ordner existiert
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+def allowed_file(filename):
+    """ Überprüft, ob die Datei eine erlaubte Erweiterung hat """
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@bp.route('/maintenance/upload', methods=['POST'])
+def upload_csv():
+    """ Ermöglicht den Upload einer CSV-Datei zur Wartungsplan-Erstellung """
+    if "file" not in request.files:
+        return jsonify({"error": "No file part"}), 400
+
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
+        
+        errors, imported = process_csv(filepath)
+        return jsonify({"message": "File processed", "imported": imported, "errors": errors}), 200
+
+def process_csv(filepath):
+    """ Verarbeitet die hochgeladene CSV-Datei und importiert Wartungsaufgaben """
+    errors = []
+    imported_tasks = []
+
+    with open(filepath, newline="", encoding="utf-8") as csvfile:
+        reader = csv.DictReader(csvfile)
+        required_fields = {"name", "date", "criticality"}
+
+        for i, row in enumerate(reader, start=1):
+            if not required_fields.issubset(row.keys()):
+                errors.append(f"Row {i}: Missing required fields")
+                continue
+
+            try:
+                new_task = MaintenancePlan(
+                    name=row["name"],
+                    date=row["date"],
+                    criticality=row["criticality"]
+                )
+                maintenance_plans.append(new_task)
+                imported_tasks.append(row)
+            except Exception as e:
+                errors.append(f"Row {i}: {str(e)}")
+
+    return errors, imported_tasks
