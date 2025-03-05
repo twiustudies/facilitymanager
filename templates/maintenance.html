@@ -1,31 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Wartungspläne</h1>
+<h1>Wartungsberichte</h1>
 
 <!-- Suchfeld für Live-Suche -->
 <input type="text" id="searchInput" placeholder="Suche nach Gebäude, Wartungstyp oder Datum..." onkeyup="searchMaintenance()">
 
-<!-- Export-Buttons für CSV und PDF -->
-<a href="{{ url_for('maintenance.export_csv') }}" class="btn">📄 Export als CSV</a>
-<a href="{{ url_for('maintenance.export_pdf') }}" class="btn">📜 Export als PDF</a>
+<!-- Druck-Button -->
+<button onclick="window.print()" class="print-button">📄 Drucken</button>
 
-<!-- Link zum Erstellen eines neuen Wartungsplans -->
-<a href="{{ url_for('maintenance.add_maintenance') }}">Neuen Wartungsplan erstellen</a>
-
-<!-- Wartungsliste -->
-<ul id="maintenanceList">
-  {% for plan in maintenance_plans %}
-  <li class="maintenance-item">
-    <span class="maintenance-data">
-      Gebäude-ID: {{ plan.building_id }}, Datum: {{ plan.date }}, Auftrag: {{ plan.description }}
-    </span>
-    <a href="{{ url_for('maintenance.edit_maintenance', plan_id=plan.id) }}">Bearbeiten</a>
-    <form action="{{ url_for('maintenance.delete_maintenance', plan_id=plan.id) }}" method="post" style="display:inline;">
-      <button type="submit">Löschen</button>
-    </form>
-  </li>
-  {% endfor %}
-</ul>
+<!-- Wartungsberichtstabelle -->
+<table id="maintenanceReport">
+  <thead>
+    <tr>
+      <th>Gebäude</th>
+      <th>Datum</th>
+      <th>Auftrag</th>
+    </tr>
+  </thead>
+  <tbody id="maintenanceList">
+    {% for plan in maintenance_plans %}
+    <tr class="maintenance-item">
+      <td class="maintenance-data">{{ plan.building_id }}</td>
+      <td class="maintenance-data">{{ plan.date }}</td>
+      <td class="maintenance-data">{{ plan.description }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 <!-- Nachricht, wenn keine Ergebnisse gefunden wurden -->
 <p id="noResultsMessage" style="display: none;">Keine Wartungseinträge gefunden.</p>
@@ -37,9 +38,9 @@ function searchMaintenance() {
     let found = false;
 
     items.forEach(item => {
-        let text = item.querySelector(".maintenance-data").textContent.toLowerCase();
+        let text = item.textContent.toLowerCase();
         if (text.includes(input)) {
-            item.style.display = "block";
+            item.style.display = "table-row";
             found = true;
         } else {
             item.style.display = "none";
@@ -51,6 +52,45 @@ function searchMaintenance() {
 </script>
 
 <style>
+  /* Druckfreundliches Design */
+  @media print {
+    body {
+      font-family: Arial, sans-serif;
+      background: white;
+      color: black;
+    }
+    .print-button, #searchInput {
+      display: none; /* Suchfeld & Druck-Button ausblenden */
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+  }
+
+  /* Standard Ansicht */
+  .print-button {
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+
+  .print-button:hover {
+    background: #0056b3;
+  }
+
   #searchInput {
     width: 100%;
     padding: 10px;
@@ -58,10 +98,20 @@ function searchMaintenance() {
     font-size: 16px;
   }
 
-  .maintenance-item {
-    margin: 10px 0;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f4f4f4;
   }
 </style>
 
