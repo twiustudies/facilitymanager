@@ -34,12 +34,16 @@
   </thead>
   <tbody id="maintenanceList">
     {% for plan in maintenance_plans %}
-    <tr class="maintenance-item 
-        {% if plan.overdue %}overdue{% elif plan.recently_completed %}completed{% endif %}" data-category="{{ plan.category }}">
-      <td class="maintenance-data">{{ plan.building_id }}</td>
-      <td class="maintenance-data">{{ plan.date }}</td>
-      <td class="maintenance-data">{{ plan.description }}</td>
-      <td class="maintenance-category">
+    <tr class="maintenance-item" 
+        data-id="{{ plan.id }}" 
+        data-category="{{ plan.category }}" 
+        data-date="{{ plan.date }}" 
+        draggable="true" 
+        ondragstart="drag(event)">
+      <td>{{ plan.building_id }}</td>
+      <td>{{ plan.date }}</td>
+      <td>{{ plan.description }}</td>
+      <td>
         {% if plan.category == "Electrical" %} ⚡ Elektrisch
         {% elif plan.category == "Sanitary" %} 🚰 Sanitär
         {% elif plan.category == "Building Maintenance" %} 🏗️ Gebäudewartung
@@ -54,6 +58,36 @@
 <p id="noResultsMessage" style="display: none;">Keine Wartungseinträge gefunden.</p>
 
 <script>
+function drag(event) {
+    event.dataTransfer.setData("text", event.target.dataset.id);
+}
+
+function allowDrop(event) {
+    event.preventDefault();
+}
+
+function drop(event, newDate) {
+    event.preventDefault();
+    let maintenanceId = event.dataTransfer.getData("text");
+    let row = document.querySelector(`[data-id='${maintenanceId}']`);
+    
+    if (row) {
+        row.dataset.date = newDate;
+        row.cells[1].textContent = newDate;
+        updateMaintenance(maintenanceId, newDate);
+    }
+}
+
+function updateMaintenance(id, newDate) {
+    fetch(`/maintenance/update_date/${id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: newDate })
+    }).then(response => response.json())
+      .then(data => console.log("Update erfolgreich", data))
+      .catch(error => console.error("Fehler beim Update:", error));
+}
+
 function searchMaintenance() {
     let input = document.getElementById("searchInput").value.toLowerCase();
     let items = document.querySelectorAll(".maintenance-item");
@@ -72,7 +106,6 @@ function searchMaintenance() {
     document.getElementById("noResultsMessage").style.display = found ? "none" : "block";
 }
 
-// Filter für überfällige Wartungen
 function filterOverdue() {
     let checkbox = document.getElementById("overdueFilter");
     let items = document.querySelectorAll(".maintenance-item");
@@ -88,7 +121,6 @@ function filterOverdue() {
     });
 }
 
-// Filter für Kategorien
 function filterCategory() {
     let category = document.getElementById("categoryFilter").value;
     let items = document.querySelectorAll(".maintenance-item");
@@ -104,7 +136,30 @@ function filterCategory() {
 </script>
 
 <style>
-  /* Farben für verschiedene Wartungskategorien */
+  .maintenance-item {
+    cursor: grab;
+  }
+
+  .maintenance-item:active {
+    opacity: 0.6;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f4f4f4;
+  }
+
   .Electrical {
     background-color: #e0f7fa !important;
   }
@@ -117,7 +172,6 @@ function filterCategory() {
     background-color: #fff3e0 !important;
   }
 
-  /* Farben für überfällige und abgeschlossene Wartungen */
   .overdue {
     background-color: #ffcccc !important;
     border-left: 5px solid #cc0000;
@@ -128,7 +182,6 @@ function filterCategory() {
     border-left: 5px solid #008000;
   }
 
-  /* Druckfreundliches Design */
   @media print {
     body {
       font-family: Arial, sans-serif;

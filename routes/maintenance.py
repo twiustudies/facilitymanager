@@ -146,3 +146,15 @@ def export_pdf():
     buffer.seek(0)
 
     return Response(buffer, mimetype="application/pdf", headers={"Content-Disposition": "attachment;filename=maintenance_report.pdf"})
+
+# NEUE ROUTE: Datum ändern durch Drag-and-Drop
+@bp.route('/update_date/<int:plan_id>', methods=['POST'])
+def update_maintenance_date(plan_id):
+    """Aktualisiert das Datum eines Wartungseintrags nach Drag-and-Drop."""
+    new_date = request.json.get("date")
+    
+    plan = next((m for m in maintenance_plans if m.id == plan_id), None)
+    if plan:
+        plan.date = new_date
+        return jsonify({"status": "success", "message": "Datum aktualisiert"}), 200
+    return jsonify({"status": "error", "message": "Eintrag nicht gefunden"}), 404
