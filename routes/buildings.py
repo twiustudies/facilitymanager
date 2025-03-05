@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify
 from models import buildings, Building
 
 bp = Blueprint('buildings', __name__, url_prefix='/buildings')
@@ -6,6 +6,15 @@ bp = Blueprint('buildings', __name__, url_prefix='/buildings')
 @bp.route('/')
 def building_list():
     return render_template('buildings.html', buildings=buildings)
+
+####
+# FM-US-1
+@bp.route('/facilities')
+def get_facilities():
+    """API endpoint to fetch facility list as JSON"""
+    facility_data = [{"id": b.id, "name": b.name} for b in buildings]
+    return jsonify(facility_data)
+####
 
 @bp.route('/add', methods=['GET', 'POST'])
 def add_building():

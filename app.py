@@ -3,7 +3,7 @@ from routes import users, buildings, maintenance
 
 app = Flask(__name__)
 
-# Registrierung der Blueprints
+# Register Blueprints
 app.register_blueprint(users.bp)
 app.register_blueprint(buildings.bp)
 app.register_blueprint(maintenance.bp)

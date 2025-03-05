@@ -1,0 +1,53 @@
+# Bytecode- und Cache-Dateien
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Virtuelle Umgebungen
+venv/
+.env
+*.env
+
+# Pytest & Coverage Reports
+.coverage
+htmlcov/
+*.cover
+*.py,cover
+
+# IDE-spezifische Dateien
+.vscode/
+.idea/
+*.iml
+
+# Docker-Dateien
+docker-compose.override.yml
+docker-compose.override.*
+n8n_data/
+
+# Node.js (falls Frontend oder npm-Pakete genutzt werden)
+node_modules/
+package-lock.json
+npm-debug.log
+
+# ngrok Authtoken & Configs
+.ngrok2/
+ngrok.log
+
+# Git & Deployment
+.DS_Store
+*.swp
+*.swo
+*.swn
+
+# SQLite (falls verwendet)
+*.sqlite3
+db.sqlite3
+
+# Secrets (falls `.env` mit API-Keys existiert)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
