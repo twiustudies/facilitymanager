@@ -4,11 +4,20 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from io import BytesIO
 from models import maintenance_plans, MaintenancePlan
+from datetime import datetime, timedelta
 
 bp = Blueprint('maintenance', __name__, url_prefix='/maintenance')
 
 @bp.route('/')
 def maintenance_list():
+    today = datetime.today().date()
+    recent_days = timedelta(days=7)  # Wartungen, die in den letzten 7 Tagen abgeschlossen wurden
+
+    for plan in maintenance_plans:
+        maintenance_date = datetime.strptime(plan.date, "%Y-%m-%d").date()
+        plan.overdue = maintenance_date < today  # Überfällig, wenn in der Vergangenheit
+        plan.recently_completed = today - maintenance_date <= recent_days  # Kürzlich abgeschlossen
+
     return render_template('maintenance.html', maintenance_plans=maintenance_plans)
 
 @bp.route('/search', methods=['GET'])

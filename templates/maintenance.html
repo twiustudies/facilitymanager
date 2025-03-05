@@ -2,6 +2,11 @@
 {% block content %}
 <h1>Wartungsberichte</h1>
 
+<!-- Filteroption für überfällige Wartungen -->
+<label for="overdueFilter">
+    <input type="checkbox" id="overdueFilter" onclick="filterOverdue()"> Nur überfällige Wartungen anzeigen
+</label>
+
 <!-- Suchfeld für Live-Suche -->
 <input type="text" id="searchInput" placeholder="Suche nach Gebäude, Wartungstyp oder Datum..." onkeyup="searchMaintenance()">
 
@@ -19,7 +24,8 @@
   </thead>
   <tbody id="maintenanceList">
     {% for plan in maintenance_plans %}
-    <tr class="maintenance-item">
+    <tr class="maintenance-item 
+        {% if plan.overdue %}overdue{% elif plan.recently_completed %}completed{% endif %}">
       <td class="maintenance-data">{{ plan.building_id }}</td>
       <td class="maintenance-data">{{ plan.date }}</td>
       <td class="maintenance-data">{{ plan.description }}</td>
@@ -49,9 +55,36 @@ function searchMaintenance() {
 
     document.getElementById("noResultsMessage").style.display = found ? "none" : "block";
 }
+
+// Filter für überfällige Wartungen
+function filterOverdue() {
+    let checkbox = document.getElementById("overdueFilter");
+    let items = document.querySelectorAll(".maintenance-item");
+
+    items.forEach(item => {
+        if (checkbox.checked) {
+            if (!item.classList.contains("overdue")) {
+                item.style.display = "none";
+            }
+        } else {
+            item.style.display = "table-row";
+        }
+    });
+}
 </script>
 
 <style>
+  /* Farben für verschiedene Wartungszustände */
+  .overdue {
+    background-color: #ffcccc !important;
+    border-left: 5px solid #cc0000;
+  }
+
+  .completed {
+    background-color: #ccffcc !important;
+    border-left: 5px solid #008000;
+  }
+
   /* Druckfreundliches Design */
   @media print {
     body {
@@ -59,8 +92,8 @@ function searchMaintenance() {
       background: white;
       color: black;
     }
-    .print-button, #searchInput {
-      display: none; /* Suchfeld & Druck-Button ausblenden */
+    .print-button, #searchInput, #overdueFilter {
+      display: none;
     }
     table {
       width: 100%;
